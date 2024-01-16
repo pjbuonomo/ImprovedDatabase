@@ -25,31 +25,30 @@ num_messages <- messages$Count()
 for (i in 1:num_messages) {
     message <- messages$Item(i)
     
-    # Error handling
-    tryCatch({
-        # Process only if the message is unread
-        if (message$UnRead() == TRUE) {
-            # Attempt to retrieve both Body and HTMLBody content
-            plainTextContent <- message$Body()
-            htmlContent <- message$HTMLBody()
-            emailContent <- ifelse(is.null(htmlContent) || htmlContent == "", plainTextContent, htmlContent)
+    # Process only if the message is unread
+    if (message$UnRead() == TRUE) {
+        # Retrieve email content
+        # First try to get the Body (plain text)
+        emailContent <- message$Body()
 
-            # Retrieve and format the ReceivedTime
-            receivedTime <- message$ReceivedTime()
-            formattedTime <- format(as.POSIXct(receivedTime, origin = "1970-01-01"), "%Y-%m-%d %H:%M:%S")
-
-            # Add email details to the data frame
-            emails_df <- rbind(emails_df, data.frame(Timestamp = formattedTime,
-                                                     Subject = message$Subject(),
-                                                     Content = emailContent))
-
-            # Mark the message as read (optional)
-            # message$UnRead(FALSE)
-            # message$Save()
+        # If Body is empty or null, fall back to HTMLBody
+        if (is.null(emailContent) || emailContent == "") {
+            emailContent <- message$HTMLBody()
         }
-    }, error = function(e) {
-        cat("Error processing message:", i, "\n")
-    })
+
+        # Retrieve and format the ReceivedTime
+        receivedTime <- message$ReceivedTime()
+        formattedTime <- format(as.POSIXct(receivedTime, origin = "1970-01-01"), "%Y-%m-%d %H:%M:%S")
+
+        # Add email details to the data frame
+        emails_df <- rbind(emails_df, data.frame(Timestamp = formattedTime,
+                                                 Subject = message$Subject(),
+                                                 Content = emailContent))
+
+        # Mark the message as read (optional)
+        # message$UnRead(FALSE)
+        # message$Save()
+    }
 }
 
 
