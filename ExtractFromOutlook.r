@@ -30,8 +30,12 @@ for (i in 1:num_messages) {
         # Retrieve email content
         emailContent <- ifelse(is.null(message$HTMLBody()), message$Body(), message$HTMLBody())
 
+        # Retrieve and format the ReceivedTime
+        receivedTime <- message$ReceivedTime()
+        formattedTime <- format(as.POSIXct(receivedTime, origin = "1970-01-01"), "%Y-%m-%d %H:%M:%S")
+
         # Add email details to the data frame
-        emails_df <- rbind(emails_df, data.frame(Timestamp = format(message$ReceivedTime(), "%Y-%m-%d %H:%M:%S"),
+        emails_df <- rbind(emails_df, data.frame(Timestamp = formattedTime,
                                                  Subject = message$Subject(),
                                                  Content = emailContent))
 
