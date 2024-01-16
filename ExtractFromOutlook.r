@@ -4,9 +4,14 @@ library(RDCOMClient)
 Outlook <- COMCreate("Outlook.Application")
 myNameSpace <- Outlook$GetNameSpace("MAPI")
 
-# Access the Inbox
-folder <- myNameSpace$Folders$Item(1)$Folders$Item("Inbox")
-messages <- folder$Items()
+# Access the Inbox - Ensure you're accessing the correct folder
+inboxFolderIndex <- 1 # This is usually 1, but might vary depending on your Outlook setup
+inbox <- myNameSpace$Folders(inboxFolderIndex)$Folders("Inbox")
+
+# Get all messages in the Inbox
+messages <- inbox$Items()
+
+# Now, proceed to filter messages and process them
 
 # Filter for unread messages from a specific sender
 target_sender <- "csbond@bloomberg.net"
