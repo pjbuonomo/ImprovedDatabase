@@ -44,48 +44,40 @@ for (i in num_messages:1) {
 > Outlook <- COMCreate("Outlook.Application")
 > myNameSpace <- Outlook$GetNameSpace("MAPI")
 > 
-> # Access the Inbox
-> folder <- myNameSpace$Folders$Item(1)$Folders$Item("Inbox")
-Error in myNameSpace$Folders$Item : 
-  object of type 'closure' is not subsettable
-> messages <- folder$Items()
-Error: object 'folder' not found
+> # Access the Inbox - Ensure you're accessing the correct folder
+> inboxFolderIndex <- 1 # This is usually 1, but might vary depending on your Outlook setup
+> inbox <- myNameSpace$Folders(inboxFolderIndex)$Folders("Inbox")
+> 
+> # Get all messages in the Inbox
+> messages <- inbox$Items()
+> 
+> # Now, proceed to filter messages and process them
 > 
 > # Filter for unread messages from a specific sender
 > target_sender <- "csbond@bloomberg.net"
 > filtered_messages <- messages[messages$UnRead() == TRUE & messages$SenderEmailAddress() == target_sender]
-Error: object 'messages' not found
+Error in h(simpleError(msg, call)) : 
+  error in evaluating the argument 'i' in selecting a method for function '[': Cannot locate 0 name(s) UnRead in COM object (status = -2147352570)
 > 
 > # Get the number of filtered messages
 > num_messages <- filtered_messages$Count()
 Error: object 'filtered_messages' not found
 > 
-> # Define the number of messages to process (in this case, 3)
-> num_to_process <- 3
-> 
 > # Loop to read and process messages
 > for (i in num_messages:1) {
-+   message <- filtered_messages$Item(i)
-+   
-+   # Check if the message is from the specified sender and is unread
-+   if (message$SenderEmailAddress() == target_sender && message$UnRead() == TRUE) {
-+     # Print message details
-+     cat("Subject:", message$Subject(), "\n")
-+     cat("Body:", message$Body(), "\n\n")
++     message <- filtered_messages$Item(i)
 +     
-+     # Process the message as needed
-+     # ... (your processing code here)
-+     
-+     # Mark the message as read
-+     message$UnRead(FALSE)
-+     message$Save()
-+     
-+     # Decrease the number of messages to process
-+     num_to_process <- num_to_process - 1
-+     
-+     # Exit the loop if we have processed the desired number of messages
-+     if (num_to_process == 0) {
-+       break
++     # Check if the message is from the specified sender and is unread
++     if (message$SenderEmailAddress() == target_sender && message$UnRead() == TRUE) {
++         # Print message details
++         cat("Subject:", message$Subject(), "\n")
++         cat("Body:", message$Body(), "\n\n")
++         
++         # Process the message as needed
++         # ... (your processing code here)
++ 
++         # Mark the message as read
++         message$UnRead(FALSE)
++         message$Save()
 +     }
-+   }
 + }
