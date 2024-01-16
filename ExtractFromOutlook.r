@@ -33,19 +33,16 @@ for (i in num_messages:1) {
         message$Save()
     }
 }
- library(RDCOMClient)
-Error in library(RDCOMClient) : there is no package called ‘RDCOMClient’
+> library(RDCOMClient)
 > 
 > # Create an Outlook application object
 > Outlook <- COMCreate("Outlook.Application")
-Error in COMCreate("Outlook.Application") : 
-  could not find function "COMCreate"
 > myNameSpace <- Outlook$GetNameSpace("MAPI")
-Error: object 'Outlook' not found
 > 
 > # Access the Inbox
 > folder <- myNameSpace$Folders$Item(1)$Folders$Item("Inbox")
-Error: object 'myNameSpace' not found
+Error in myNameSpace$Folders$Item : 
+  object of type 'closure' is not subsettable
 > messages <- folder$Items()
 Error: object 'folder' not found
 > 
