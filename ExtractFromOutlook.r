@@ -1,8 +1,3 @@
-if (!requireNamespace("remotes", quietly = TRUE))
-    install.packages("remotes")
-remotes::install_github("omegahat/RDCOMClient")
-
-
 library(RDCOMClient)
 
 # Create an Outlook application object
@@ -13,7 +8,7 @@ myNameSpace <- Outlook$GetNameSpace("MAPI")
 folder <- myNameSpace$Folders$Item(1)$Folders$Item("Inbox")
 messages <- folder$Items()
 
-# Define the number of messages to read
+# Get the number of messages in the Inbox
 num_messages <- messages$Count()
 
 # Loop to read messages
