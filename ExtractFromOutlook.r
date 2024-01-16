@@ -8,14 +8,28 @@ myNameSpace <- Outlook$GetNameSpace("MAPI")
 folder <- myNameSpace$Folders$Item(1)$Folders$Item("Inbox")
 messages <- folder$Items()
 
-# Get the number of messages in the Inbox
-num_messages <- messages$Count()
+# Filter for unread messages from a specific sender
+target_sender <- "csbond@bloomberg.net"
+filtered_messages <- messages[messages$UnRead() == TRUE & messages$SenderEmailAddress() == target_sender]
 
-# Loop to read messages
-for (i in 1:num_messages) {
-    message <- messages$Item(i)
-    cat("Subject:", message$Subject(), "\n")
-    cat("Body:", message$Body(), "\n\n")
-    # Here you can add code to process or store these details
-    # For example, parsing the body of the email and storing it in an SQL database
+# Get the number of filtered messages
+num_messages <- filtered_messages$Count()
+
+# Loop to read and process messages
+for (i in num_messages:1) {
+    message <- filtered_messages$Item(i)
+    
+    # Check if the message is from the specified sender and is unread
+    if (message$SenderEmailAddress() == target_sender && message$UnRead() == TRUE) {
+        # Print message details
+        cat("Subject:", message$Subject(), "\n")
+        cat("Body:", message$Body(), "\n\n")
+        
+        # Process the message as needed
+        # ... (your processing code here)
+
+        # Mark the message as read
+        message$UnRead(FALSE)
+        message$Save()
+    }
 }
