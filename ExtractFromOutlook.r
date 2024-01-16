@@ -1,5 +1,4 @@
 library(RDCOMClient)
-library(writexl)
 
 # Create an Outlook application object
 Outlook <- COMCreate("Outlook.Application")
@@ -32,7 +31,7 @@ for (i in 1:num_messages) {
         emailContent <- ifelse(is.null(message$HTMLBody()), message$Body(), message$HTMLBody())
 
         # Add email details to the data frame
-        emails_df <- rbind(emails_df, data.frame(Timestamp = message$ReceivedTime(),
+        emails_df <- rbind(emails_df, data.frame(Timestamp = format(message$ReceivedTime(), "%Y-%m-%d %H:%M:%S"),
                                                  Subject = message$Subject(),
                                                  Content = emailContent))
 
@@ -42,5 +41,5 @@ for (i in 1:num_messages) {
     }
 }
 
-# Write the data frame to an Excel file
-write_xlsx(emails_df, path = "S:/Touchstone/Catrader/Boston/Database/UnreadDatabaseEntryEmails.xlsx")
+# Write the data frame to a CSV file
+write.csv(emails_df, file = "S:/Touchstone/Catrader/Boston/Database/UnreadDatabaseEntryEmails.csv", row.names = FALSE)
