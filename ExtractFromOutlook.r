@@ -47,3 +47,4 @@ for (i in 1:num_messages) {
 
 # Write the data frame to a CSV file
 write.csv(emails_df, file = "S:/Touchstone/Catrader/Boston/Database/UnreadDatabaseEntryEmails.csv", row.names = FALSE)
+cat("Email processing completed. Data written to UnreadDatabaseEntryEmails.csv\n")
