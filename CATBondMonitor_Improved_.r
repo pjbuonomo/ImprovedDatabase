@@ -187,8 +187,9 @@ server <- function(input, output, session) {
             processing = FALSE, 
             initComplete = JS(js), 
             preDrawCallback = JS('function() { Shiny.unbindAll(this.api().table().node()); }'), 
-            drawCallback = JS('function() { Shiny.bindAll(this.api().table().node()); } ')) 
-            }), server=TRUE) 
+            drawCallback = JS('function() { Shiny.bindAll(this.api().table().node()); } '))
+        ) 
+    }, server=TRUE)
 
             # The proxy used for reactive the data frame after user input
             proxy = dataTableProxy('d2', session=session) 
