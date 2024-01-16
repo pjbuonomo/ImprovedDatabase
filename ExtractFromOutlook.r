@@ -1,18 +1,23 @@
 library(RDCOMClient)
+library(writexl)
 
 # Create an Outlook application object
 Outlook <- COMCreate("Outlook.Application")
 myNameSpace <- Outlook$GetNameSpace("MAPI")
 
-# Access the Inbox
-inboxFolderIndex <- 1 # This is usually 1, but might vary depending on your Outlook setup
+# Access the Inbox and then the specific subfolder
+inboxFolderIndex <- 1 # Adjust based on your Outlook setup
 inbox <- myNameSpace$Folders(inboxFolderIndex)$Folders("Inbox")
-
-# Access the specific subfolder "BH Cat Bond" within the Inbox
 bhCatBondFolder <- inbox$Folders("BH Cat Bond")
 
 # Get all messages in the "BH Cat Bond" folder
 messages <- bhCatBondFolder$Items()
+
+# Initialize a data frame to store email details
+emails_df <- data.frame(Timestamp = character(),
+                        Subject = character(),
+                        Content = character(),
+                        stringsAsFactors = FALSE)
 
 # Get the number of messages in the folder
 num_messages <- messages$Count()
@@ -21,10 +26,21 @@ num_messages <- messages$Count()
 for (i in 1:num_messages) {
     message <- messages$Item(i)
     
-    # Print message details
-    cat("Subject:", message$Subject(), "\n")
-    cat("Body:", message$Body(), "\n\n")
-    
-    # Here you can add code to process these details
-    # For example, storing them in an SQL database
+    # Process only if the message is unread
+    if (message$UnRead() == TRUE) {
+        # Retrieve email content
+        emailContent <- ifelse(is.null(message$HTMLBody()), message$Body(), message$HTMLBody())
+
+        # Add email details to the data frame
+        emails_df <- rbind(emails_df, data.frame(Timestamp = message$ReceivedTime(),
+                                                 Subject = message$Subject(),
+                                                 Content = emailContent))
+
+        # Mark the message as read (optional)
+        # message$UnRead(FALSE)
+        # message$Save()
+    }
 }
+
+# Write the data frame to an Excel file
+write_xlsx(emails_df, path = "S:/Touchstone/Catrader/Boston/Database/UnreadDatabaseEntryEmails.xlsx")
