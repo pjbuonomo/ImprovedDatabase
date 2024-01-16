@@ -11,7 +11,6 @@ if (!py_module_available("tensorflow")) {
   py_install("tensorflow")
 }
 
-
 # Load the Python library for transformers
 transformers <- import("transformers")
 tensorflow <- import("tensorflow")
