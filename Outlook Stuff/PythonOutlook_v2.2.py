@@ -3,12 +3,18 @@ import pandas as pd
 import re
 from datetime import datetime
 
+def extract_content_up_to_marker(body, marker):
+    marker_position = body.find(marker)
+    if marker_position != -1:
+        return body[:marker_position].strip()
+    else:
+        return body.strip()
+
 def parse_line(line):
     size_first_pattern = r"(\d+(\.\d+)?(mm|m|k)?)\s+([\w\s]+?)\s+\((\w+)\)\s+(\d+\.\d+)\s+(offered|bid|offer) ?(?:@|at)?"
     name_first_pattern = r"([\w\s]+?)\s+\((\w+)\)\s+(\d+\.\d+)\s+(offered|bid|offer) ?(?:@|at)?"
     dual_action_pattern = r"(\d+(\.\d+)?(mm|m|k)?)\s+([\w\s]+?)\s+\((\w+)\)\s+(\d+\.\d+)\s+(bid)\s+/\s+(\d+\.\d+)\s+(offer)"
     
-    # Default dictionary for error case
     default_dict = {"Name": "", "Size": "", "CUSIP": "", "Actions": "", "Price": "", "Error": line}
 
     entries = []
@@ -29,40 +35,15 @@ def parse_line(line):
             entries.append({"Name": name.strip(), "Size": size, "CUSIP": cusip, "Actions": "bid", "Price": bid_price, "Error": ""})
             entries.append({"Name": name.strip(), "Size": size, "CUSIP": cusip, "Actions": "offer", "Price": offer_price, "Error": ""})
 
-    # If no pattern matched, return the default error entry
     return entries if entries else [default_dict]
 
 # Create an Outlook application object
 Outlook = win32com.client.Dispatch("Outlook.Application")
 namespace = Outlook.GetNamespace("MAPI")
-inbox = namespace.GetDefaultFolder(6)
+
+# Access the Inbox and then the specific subfolder
+inbox = namespace.GetDefaultFolder(6)  # 6 refers to the inbox
 bhCatBondFolder = inbox.Folders["BH Cat Bond"]
-
-emails = []
-sorted_emails = []
-
-for message in bhCatBondFolder.Items:
-    if message.UnRead:
-        subject = message.Subject
-        body = message.Body
-        received_time = message.ReceivedTime
-        formatted_time = received_time.strftime('%Y-%m-%d %H:%M:%S')
-        extracted_body = extract_content_up_to_marker(body, "Craig Bonder")
-
-        emails.append({
-            "Timestamp": formatted_time,
-            "Subject": subject,
-            "Content": extracted_body
-        })
-
-        # Process each line for sorting
-        lines = extracted_body.split('\n')
-        for line in lines:
-            entries = parse_line(line)
-            sorted_emails.extend(entries)
-
-        # message.UnRead = False  # Uncomment to mark as read
-        # message.Save()  # Uncomment to save the state
 
 emails = []
 sorted_emails = []
