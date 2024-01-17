@@ -17,29 +17,29 @@ dir.create(outputDir, showWarnings = FALSE)
 # ... [previous code remains the same]
 
 # Loop to process unread messages
+
+# Loop to process unread messages
 for (i in 1:bhCatBondFolder$Items()$Count()) {
     message <- bhCatBondFolder$Items()$Item(i)
-    
+
     # Process only if the message is unread
     if (message$UnRead() == TRUE) {
         textContent <- ""
 
-        # Check the format of the email
-        switch(as.integer(message$BodyFormat()),
-               { # 1: Plain Text
-                 textContent <- message$Body()
-               },
-               { # 2: HTML
-                 htmlContent <- message$HTMLBody()
-                 # Convert HTML to plain text
-                 textContent <- gsub("<[^>]*>", "", htmlContent)  # Basic HTML tag removal
-                 textContent <- gsub("&nbsp;", " ", textContent) # Replace HTML space entities
-               },
-               { # 3: Rich Text
-                 # Assuming Outlook automatically provides plain text
-                 textContent <- message$Body()
-               }
-        )
+        # Determine the format of the email
+        emailFormat <- as.integer(message$BodyFormat())
+
+        if (emailFormat == 1) { # Plain Text
+            textContent <- message$Body()
+        } else if (emailFormat == 2) { # HTML
+            htmlContent <- message$HTMLBody()
+            # Convert HTML to plain text
+            textContent <- gsub("<[^>]*>", "", htmlContent)  # Basic HTML tag removal
+            textContent <- gsub("&nbsp;", " ", textContent) # Replace HTML space entities
+        } else if (emailFormat == 3) { # Rich Text
+            # Assuming Outlook automatically provides plain text
+            textContent <- message$Body()
+        }
 
         if (textContent != "") {
             # Create a unique filename for the text file
