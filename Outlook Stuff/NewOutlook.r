@@ -14,22 +14,43 @@ bhCatBondFolder <- inbox$Folders("BH Cat Bond")
 outputDir <- "S:/Touchstone/Catrader/Boston/Database/UnreadEmails"
 dir.create(outputDir, showWarnings = FALSE)
 
+# ... [previous code remains the same]
+
 # Loop to process unread messages
 for (i in 1:bhCatBondFolder$Items()$Count()) {
     message <- bhCatBondFolder$Items()$Item(i)
     
     # Process only if the message is unread
     if (message$UnRead() == TRUE) {
-        # Create a unique filename for the text file
-        timestamp <- format(Sys.time(), "%Y%m%d%H%M%S")
-        filename <- file.path(outputDir, paste("email_", timestamp, ".txt", sep = ""))
-        
-        # Save the email as a text file
-        message$SaveAs(filename, 2) # Use 2 for olTXT format
-        
-        # Mark the message as read (optional)
-        message$UnRead(FALSE)
-        message$Save()
+        textContent <- ""
+
+        # Check the format of the email
+        switch(as.integer(message$BodyFormat()),
+               { # 1: Plain Text
+                 textContent <- message$Body()
+               },
+               { # 2: HTML
+                 htmlContent <- message$HTMLBody()
+                 # Convert HTML to plain text if needed
+                 textContent <- ... # [Your HTML to text conversion logic here]
+               },
+               { # 3: Rich Text
+                 # Similar approach as HTML
+               }
+        )
+
+        if (textContent != "") {
+            # Create a unique filename for the text file
+            timestamp <- format(Sys.time(), "%Y%m%d%H%M%S")
+            filename <- file.path(outputDir, paste("email_", timestamp, ".txt", sep = ""))
+            
+            # Save the email content as a text file
+            writeLines(textContent, con = filename)
+            
+            # Mark the message as read (optional)
+            message$UnRead(FALSE)
+            message$Save()
+        }
     }
 }
 
