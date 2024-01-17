@@ -87,3 +87,31 @@ with pd.ExcelWriter(excel_file_path, engine='openpyxl', mode='a') as writer:
     write_df_to_excel(writer, sorted_df, 'Sorted')
 
 print("Emails processed and saved to Excel file.")
+
+
+
+
+
+
+
+
+
+
+Traceback (most recent call last):
+
+  File "\\ad-its.credit-agricole.fr\Amundi_Boston\Homedirs\buonomo\@Config\Desktop\Outlook Scanner\ExtractOutlook.py", line 86, in <module>
+    write_df_to_excel(writer, emails_df, 'Unread Emails')
+
+  File "\\ad-its.credit-agricole.fr\Amundi_Boston\Homedirs\buonomo\@Config\Desktop\Outlook Scanner\ExtractOutlook.py", line 45, in write_df_to_excel
+    df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+  File "C:\ProgramData\Anaconda3\lib\site-packages\pandas\core\generic.py", line 2284, in to_excel
+    formatter.write(
+
+  File "C:\ProgramData\Anaconda3\lib\site-packages\pandas\io\formats\excel.py", line 840, in write
+    writer.write_cells(
+
+  File "C:\ProgramData\Anaconda3\lib\site-packages\pandas\io\excel\_openpyxl.py", line 436, in write_cells
+    raise ValueError(
+
+ValueError: Sheet 'Unread Emails' already exists and if_sheet_exists is set to 'error'.
