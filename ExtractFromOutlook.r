@@ -56,7 +56,20 @@ for (i in 1:num_messages) {
         # message$Save()
     }
 }
+# Loop to check HTML content
+for (i in 1:min(messages$Count(), 5)) { # Limit to first 5 emails for testing
+    message <- messages$Item(i)
+    
+    if (message$UnRead() == TRUE) {
+        htmlContent <- message$HTMLBody()
 
+        if (!is.null(htmlContent) && htmlContent != "") {
+            cat("Email", i, "has HTML content.\n")
+        } else {
+            cat("Email", i, "does NOT have HTML content.\n")
+        }
+    }
+}
 
 
 # Write the data frame to a CSV file
