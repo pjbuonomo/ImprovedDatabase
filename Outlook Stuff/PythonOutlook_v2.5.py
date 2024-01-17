@@ -30,3 +30,6 @@ def parse_line(line):
             entries.append({"Name": name.strip(), "Size": "", "CUSIP": cusip, "Actions": "bid", "Price": price, "Error": ""})
 
     return entries if entries else [default_dict]
+    size, name, cusip, price, action = match.groups()[0], match.groups()[3], match.groups()[4], match.groups()[5]
+
+ValueError: not enough values to unpack (expected 5, got 4)
