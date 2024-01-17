@@ -24,6 +24,7 @@ num_messages <- messages$Count()
 
 # Loop to read messages
 # Loop to read messages
+# Loop to read messages
 for (i in 1:num_messages) {
     message <- messages$Item(i)
     
@@ -32,22 +33,30 @@ for (i in 1:num_messages) {
         # Retrieve HTML email content
         htmlContent <- message$HTMLBody()
 
+        # Parse and extract content within the <html> tags
         if (!is.null(htmlContent) && htmlContent != "") {
-            # Parse the HTML content
             parsedHtml <- read_html(htmlContent)
-
-            # Try extracting text from specific tags if necessary
-            # Example: extractedContent <- html_text(html_nodes(parsedHtml, "div"))
-
-            # General extraction
-            extractedContent <- html_text(parsedHtml, trim = TRUE)
+            extractedContent <- html_text(parsedHtml)
         } else {
+            # Use a placeholder if HTML content is not available
             extractedContent <- "No HTML content available"
         }
 
-        # ... [rest of the loop for formatting time and adding to data frame] ...
+        # Retrieve and format the ReceivedTime
+        receivedTime <- message$ReceivedTime()
+        formattedTime <- format(as.POSIXct(receivedTime, origin = "1970-01-01"), "%Y-%m-%d %H:%M:%S")
+
+        # Add email details to the data frame
+        emails_df <- rbind(emails_df, data.frame(Timestamp = formattedTime,
+                                                 Subject = message$Subject(),
+                                                 Content = extractedContent))
+
+        # Mark the message as read (optional)
+        # message$UnRead(FALSE)
+        # message$Save()
     }
 }
+
 
 
 # Write the data frame to a CSV file
