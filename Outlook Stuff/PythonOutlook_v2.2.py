@@ -2,6 +2,7 @@ import win32com.client
 import pandas as pd
 import re
 from datetime import datetime
+import openpyxl
 
 def extract_content_up_to_marker(body, marker):
     marker_position = body.find(marker)
@@ -37,11 +38,15 @@ def parse_line(line):
 
     return entries if entries else [default_dict]
 
-# Create an Outlook application object
+def write_df_to_excel(writer, df, sheet_name):
+    if sheet_name in writer.book.sheetnames:
+        idx = writer.book.sheetnames.index(sheet_name)
+        writer.book.remove(writer.book.worksheets[idx])
+    df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+# Create an Outlook application object and access emails
 Outlook = win32com.client.Dispatch("Outlook.Application")
 namespace = Outlook.GetNamespace("MAPI")
-
-# Access the Inbox and then the specific subfolder
 inbox = namespace.GetDefaultFolder(6)  # 6 refers to the inbox
 bhCatBondFolder = inbox.Folders["BH Cat Bond"]
 
@@ -76,36 +81,9 @@ sorted_df = pd.DataFrame(sorted_emails)
 # File path for the Excel file
 excel_file_path = "//ad-its.credit-agricole.fr/Amundi_Boston/Homedirs/buonomo/@Config/Desktop/Outlook Scanner/OrganizedBondEntries.xlsx"
 
-
-# Save to Excel with two sheets
+# Save to Excel with two sheets, overwriting if they exist
 with pd.ExcelWriter(excel_file_path, engine='openpyxl', mode='a') as writer:
-    emails_df.to_excel(writer, sheet_name='Unread Emails', index=False)
-    sorted_df.to_excel(writer, sheet_name='Sorted', index=False)
+    write_df_to_excel(writer, emails_df, 'Unread Emails')
+    write_df_to_excel(writer, sorted_df, 'Sorted')
 
 print("Emails processed and saved to Excel file.")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
