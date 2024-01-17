@@ -1,4 +1,5 @@
 library(RDCOMClient)
+library(rvest)
 library(tools) # Load the 'tools' library for file operations
 
 # Create an Outlook application object
@@ -14,15 +15,12 @@ bhCatBondFolder <- inbox$Folders("BH Cat Bond")
 outputDir <- "S:/Touchstone/Catrader/Boston/Database/UnreadEmails"
 dir.create(outputDir, showWarnings = FALSE)
 
-# Initialize a data frame to store email details
-emails_df <- data.frame(Timestamp = character(),
-                        Subject = character(),
-                        Content = character(),
-                        stringsAsFactors = FALSE)
+# Get all messages in the "BH Cat Bond" folder
+messages <- bhCatBondFolder$Items()
 
 # Loop to process unread messages
-for (i in 1:bhCatBondFolder$Items()$Count()) {
-    message <- bhCatBondFolder$Items()$Item(i)
+for (i in 1:messages$Count()) {
+    message <- messages$Item(i)
     
     # Process only if the message is unread
     if (message$UnRead() == TRUE) {
@@ -50,16 +48,22 @@ for (i in 1:bhCatBondFolder$Items()$Count()) {
             
             # Save the email content as a text file
             writeLines(textContent, con = filename)
-            
-            # Mark the message as read (optional)
-            message$UnRead(FALSE)
-            message$Save()
         }
+
+        # Mark the message as read (optional)
+        # message$UnRead(FALSE)
+        # message$Save()
     }
 }
 
 # Process the saved text files and extract their content
 emailFiles <- list.files(path = outputDir, pattern = "*.txt", full.names = TRUE)
+
+# Initialize a data frame to store email details
+emails_df <- data.frame(Timestamp = character(),
+                        Subject = character(),
+                        Content = character(),
+                        stringsAsFactors = FALSE)
 
 for (emailFile in emailFiles) {
     # Read the text from the file
