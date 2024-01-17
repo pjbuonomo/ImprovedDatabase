@@ -20,19 +20,16 @@ for (i in 1:bhCatBondFolder$Items()$Count()) {
     
     # Process only if the message is unread
     if (message$UnRead() == TRUE) {
-        # Retrieve plain text email content
-        textContent <- message$Body()
-        
         # Create a unique filename for the text file
         timestamp <- format(Sys.time(), "%Y%m%d%H%M%S")
         filename <- file.path(outputDir, paste("email_", timestamp, ".txt", sep = ""))
         
-        # Save the email content as a text file
-        writeLines(textContent, con = filename)
+        # Save the email as a text file
+        message$SaveAs(filename, 2) # Use 2 for olTXT format
         
         # Mark the message as read (optional)
-        # message$UnRead(FALSE)
-        # message$Save()
+        message$UnRead(FALSE)
+        message$Save()
     }
 }
 
