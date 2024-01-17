@@ -18,11 +18,28 @@ outputDir = 'S:/Touchstone/Catrader/Boston/Database/UnreadEmails'
 os.makedirs(outputDir, exist_ok=True)
 
 # Loop to process unread messages
+python_code <- "
+import win32com.client
+import os
+
+# Create an Outlook application object
+Outlook = win32com.client.Dispatch('Outlook.Application')
+namespace = Outlook.GetNamespace('MAPI')
+
+# Access the Inbox and then the specific subfolder
+inbox = namespace.GetDefaultFolder(6)  # 6 refers to the inbox
+bhCatBondFolder = inbox.Folders['BH Cat Bond']
+
+# Create a directory to store the text files
+outputDir = 'S:/Touchstone/Catrader/Boston/Database/UnreadEmails'
+os.makedirs(outputDir, exist_ok=True)
+
+# Loop to process unread messages
 for message in bhCatBondFolder.Items:
     if message.UnRead:
         # Prepare the filename, removing problematic characters
         subject = message.Subject.replace(':', '').replace('/', '').replace('\\\\', '')
-        filename = f'{outputDir}/{subject}.txt'
+        filename = outputDir + '/' + subject + '.txt'
         # Save the email as a text file
         message.SaveAs(filename, 0)  # 0 is the olTXT format
         # Mark the message as read (optional)
@@ -53,11 +70,3 @@ for (emailFile in emailFiles) {
 }
 
 write.csv(emails_df, file = "S:/Touchstone/Catrader/Boston/Database/UnreadDatabaseEntryEmails.csv", row.names = FALSE)
-
-
-ed string constant in:
-"        # Save the email as a text file
-        filename = f"{outputDir}/{message.Subject.replace(':', '').replace('"
->         message.SaveAs(filename, 0)  # 0 is the olTXT format
-Error in message.SaveAs(filename, 0) : 
-  could not find function "message.SaveAs"
