@@ -14,6 +14,12 @@ bhCatBondFolder <- inbox$Folders("BH Cat Bond")
 outputDir <- "S:/Touchstone/Catrader/Boston/Database/UnreadEmails"
 dir.create(outputDir, showWarnings = FALSE)
 
+# Initialize a data frame to store email details
+emails_df <- data.frame(Timestamp = character(),
+                        Subject = character(),
+                        Content = character(),
+                        stringsAsFactors = FALSE)
+
 # Loop to process unread messages
 for (i in 1:bhCatBondFolder$Items()$Count()) {
     message <- bhCatBondFolder$Items()$Item(i)
@@ -33,31 +39,22 @@ for (i in 1:bhCatBondFolder$Items()$Count()) {
         # Mark the message as read (optional)
         message$UnRead(FALSE)
         message$Save()
+        
+        # Retrieve and format the ReceivedTime
+        receivedTime <- message$ReceivedTime()
+        formattedTime <- format(as.POSIXct(receivedTime, origin = "1970-01-01"), "%Y-%m-%d %H:%M:%S")
+        
+        # Add email details to the data frame
+        emails_df <- rbind(emails_df, data.frame(Timestamp = formattedTime,
+                                                 Subject = message$Subject(),
+                                                 Content = textContent))
     }
 }
 
 # Process the saved text files and extract their content
 emailFiles <- list.files(path = outputDir, pattern = "*.txt", full.names = TRUE)
 
-# Initialize a data frame to store email details
-emails_df <- data.frame(Timestamp = character(),
-                        Subject = character(),
-                        Content = character(),
-                        stringsAsFactors = FALSE)
-
 for (emailFile in emailFiles) {
-    # Read the text from the file
-    emailContent <- readLines(emailFile, warn = FALSE)
-    
-    # Retrieve and format the ReceivedTime
-    receivedTime <- file.info(emailFile)$mtime
-    formattedTime <- format(as.POSIXct(receivedTime), "%Y-%m-%d %H:%M:%S")
-    
-    # Add email details to the data frame
-    emails_df <- rbind(emails_df, data.frame(Timestamp = formattedTime,
-                                             Subject = "Email Subject", # Modify as needed
-                                             Content = paste(emailContent, collapse = "\n")))
-    
     # Delete the text file
     unlink(emailFile)
 }
