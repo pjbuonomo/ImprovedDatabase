@@ -25,3 +25,4 @@ for (email in unread_emails) {
 
 # Disconnect from Outlook
 ol_disconnect(outlook)
+repos = "https://cran.r-project.org/bin/windows/contrib/your_R_version/"
