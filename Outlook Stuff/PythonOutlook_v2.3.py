@@ -1,3 +1,33 @@
+def parse_line(line):
+    size_first_pattern = r"(\d+(\.\d+)?(mm|m|k))\s+([\w\s-]+?)\s+\((\w+)\)\s+(\d+\.\d+)\s+(bid|offered|offer)\s*(?:@|at|-)?\s*(\d*\.\d+)?"
+    name_first_pattern = r"([\w\s-]+?)\s+\((\w+)\)\s+(\d*\.\d+)?\s*(bid|offered|offer)\s*(?:@|at|-)?\s*(\d+\.\d+)"
+    dual_action_pattern = r"(\d+(\.\d+)?(mm|m|k))\s+([\w\s-]+?)\s+\((\w+)\)\s+(\d+\.\d+)\s+(bid)\s+/\s+(\d+\.\d+)\s+(offer)"
+
+    default_dict = {"Name": "", "Size": "", "CUSIP": "", "Actions": "", "Price": "", "Error": line}
+
+    entries = []
+
+    # Size-First Format
+    if re.match(size_first_pattern, line):
+        for match in re.finditer(size_first_pattern, line):
+            size, name, cusip, price, action, alt_price = match.groups()[0], match.groups()[3], match.groups()[4], match.groups()[5], match.groups()[6], match.groups()[7]
+            entries.append({"Name": name.strip(), "Size": size, "CUSIP": cusip, "Actions": action, "Price": price if price else alt_price, "Error": ""})
+
+    # Name-First Format
+    elif re.match(name_first_pattern, line):
+        for match in re.finditer(name_first_pattern, line):
+            name, cusip, alt_price, action, price = match.groups()[0], match.groups()[1], match.groups()[2], match.groups()[3], match.groups()[4]
+            entries.append({"Name": name.strip(), "Size": "", "CUSIP": cusip, "Actions": action, "Price": price if price else alt_price, "Error": ""})
+
+    # Dual-Action Format
+    elif re.match(dual_action_pattern, line):
+        for match in re.finditer(dual_action_pattern, line):
+            size, name, cusip, bid_price, offer_price = match.groups()[0], match.groups()[3], match.groups()[4], match.groups()[5], match.groups()[7]
+            entries.append({"Name": name.strip(), "Size": size, "CUSIP": cusip, "Actions": "bid", "Price": bid_price, "Error": ""})
+            entries.append({"Name": name.strip(), "Size": size, "CUSIP": cusip, "Actions": "offer", "Price": offer_price, "Error": ""})
+
+    return entries if entries else [default_dict]
+
 Please show in all offerings. Many thanks for the focus.
 Alamo 2023-1 A (011395AJ9) bid at 102.50
 Blue Sky 2023-1 (XS2728630596) bid at 100.15
