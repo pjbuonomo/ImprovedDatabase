@@ -35,3 +35,4 @@ def parse_line(line):
             entries.append({"Name": name.strip(), "Size": size, "CUSIP": cusip, "Actions": action, "Price": special_phrase, "Error": ""})
 
     return entries if entries else [default_dict]
+
