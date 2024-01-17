@@ -35,6 +35,9 @@ for (i in 1:num_messages) {
         if (!is.null(htmlContent) && htmlContent != "") {
             parsedHtml <- read_html(htmlContent)
             extractedContent <- html_text(parsedHtml)
+        } else {
+            # Use a placeholder if HTML content is not available
+            extractedContent <- "No HTML content available"
         }
 
         # Retrieve and format the ReceivedTime
@@ -52,7 +55,5 @@ for (i in 1:num_messages) {
     }
 }
 
-
 # Write the data frame to a CSV file
 write.csv(emails_df, file = "S:/Touchstone/Catrader/Boston/Database/UnreadDatabaseEntryEmails.csv", row.names = FALSE)
-cat("Email processing completed. Data written to UnreadDatabaseEntryEmails.csv\n")
