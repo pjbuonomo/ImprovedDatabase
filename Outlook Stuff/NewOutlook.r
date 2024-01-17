@@ -31,11 +31,13 @@ for (i in 1:bhCatBondFolder$Items()$Count()) {
                },
                { # 2: HTML
                  htmlContent <- message$HTMLBody()
-                 # Convert HTML to plain text if needed
-                 textContent <- ... # [Your HTML to text conversion logic here]
+                 # Convert HTML to plain text
+                 textContent <- gsub("<[^>]*>", "", htmlContent)  # Basic HTML tag removal
+                 textContent <- gsub("&nbsp;", " ", textContent) # Replace HTML space entities
                },
                { # 3: Rich Text
-                 # Similar approach as HTML
+                 # Assuming Outlook automatically provides plain text
+                 textContent <- message$Body()
                }
         )
 
