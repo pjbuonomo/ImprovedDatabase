@@ -76,9 +76,36 @@ sorted_df = pd.DataFrame(sorted_emails)
 # File path for the Excel file
 excel_file_path = "//ad-its.credit-agricole.fr/Amundi_Boston/Homedirs/buonomo/@Config/Desktop/Outlook Scanner/OrganizedBondEntries.xlsx"
 
+# Function to write DataFrame to Excel with overwrite capability for sheets
+def write_df_to_excel(writer, df, sheet_name):
+    if sheet_name in writer.book.sheetnames:
+        idx = writer.book.sheetnames.index(sheet_name)
+        writer.book.remove(writer.book.worksheets[idx])
+    df.to_excel(writer, sheet_name=sheet_name, index=False)
+
 # Save to Excel with two sheets
 with pd.ExcelWriter(excel_file_path, engine='openpyxl', mode='a') as writer:
     emails_df.to_excel(writer, sheet_name='Unread Emails', index=False)
     sorted_df.to_excel(writer, sheet_name='Sorted', index=False)
 
 print("Emails processed and saved to Excel file.")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
