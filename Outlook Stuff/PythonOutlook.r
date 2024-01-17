@@ -48,3 +48,11 @@ for (emailFile in emailFiles) {
 }
 
 write.csv(emails_df, file = "S:/Touchstone/Catrader/Boston/Database/UnreadDatabaseEntryEmails.csv", row.names = FALSE)
+
+
+ed string constant in:
+"        # Save the email as a text file
+        filename = f"{outputDir}/{message.Subject.replace(':', '').replace('"
+>         message.SaveAs(filename, 0)  # 0 is the olTXT format
+Error in message.SaveAs(filename, 0) : 
+  could not find function "message.SaveAs"
