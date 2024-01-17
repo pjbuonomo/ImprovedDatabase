@@ -11,6 +11,13 @@ def extract_content_up_to_marker(body, marker):
     else:
         return body.strip()
 
+
+def remove_sheet_if_exists(workbook, sheet_name):
+    if sheet_name in workbook.sheetnames:
+        workbook.remove(workbook[sheet_name])
+
+
+
 def parse_line(line):
     size_first_pattern = r"(\d+(\.\d+)?(mm|m|k)?)\s+([\w\s]+?)\s+\((\w+)\)\s+(\d+\.\d+)\s+(offered|bid|offer) ?(?:@|at)?"
     name_first_pattern = r"([\w\s]+?)\s+\((\w+)\)\s+(\d+\.\d+)\s+(offered|bid|offer) ?(?:@|at)?"
@@ -81,10 +88,17 @@ sorted_df = pd.DataFrame(sorted_emails)
 # File path for the Excel file
 excel_file_path = "//ad-its.credit-agricole.fr/Amundi_Boston/Homedirs/buonomo/@Config/Desktop/Outlook Scanner/OrganizedBondEntries.xlsx"
 
-# Save to Excel with two sheets, overwriting if they exist
+# Open the workbook and remove sheets if they exist
+workbook = openpyxl.load_workbook(excel_file_path)
+remove_sheet_if_exists(workbook, 'Unread Emails')
+remove_sheet_if_exists(workbook, 'Sorted')
+workbook.save(excel_file_path)
+workbook.close()
+
+# Save to Excel with two sheets
 with pd.ExcelWriter(excel_file_path, engine='openpyxl', mode='a') as writer:
-    write_df_to_excel(writer, emails_df, 'Unread Emails')
-    write_df_to_excel(writer, sorted_df, 'Sorted')
+    emails_df.to_excel(writer, sheet_name='Unread Emails', index=False)
+    sorted_df.to_excel(writer, sheet_name='Sorted', index=False)
 
 print("Emails processed and saved to Excel file.")
 
