@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jan 17 13:31:39 2024
+
+@author: buonomo
+"""
+
 import win32com.client
 import os
 import pandas as pd
@@ -40,7 +47,7 @@ for message in bhCatBondFolder.Items:
 emails_df = pd.DataFrame(emails)
 
 # Define the output CSV file path
-output_csv = "S:/Touchstone/Catrader/Boston/Database/UnreadDatabaseEntryEmails.csv"
-
+output_csv = "//ad-its.credit-agricole.fr/Amundi_Boston/Homedirs/buonomo/@Config/Desktop/Outlook Scanner/UnreadDatabaseEntryEmails.csv"
+print(emails)
 # Save the DataFrame to CSV
 emails_df.to_csv(output_csv, index=False)
