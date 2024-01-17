@@ -35,9 +35,6 @@ for (i in 1:num_messages) {
         if (!is.null(htmlContent) && htmlContent != "") {
             parsedHtml <- read_html(htmlContent)
             extractedContent <- html_text(parsedHtml)
-        } else {
-            # Fallback to plain text if HTML content is not available
-            extractedContent <- message$Body()
         }
 
         # Retrieve and format the ReceivedTime
