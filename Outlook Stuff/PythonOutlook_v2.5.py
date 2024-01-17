@@ -9,27 +9,36 @@ def parse_line(line):
     entries = []
 
     if re.match(size_first_pattern, line):
-        for match in re.finditer(size_first_pattern, line):
-            size, name, cusip, price, action = match.groups()[0], match.groups()[3], match.groups()[4], match.groups()[5], match.groups()[6]
-            entries.append({"Name": name.strip(), "Size": size, "CUSIP": cusip, "Actions": action, "Price": price, "Error": ""})
+        matches = re.finditer(size_first_pattern, line)
+        for match in matches:
+            groups = match.groups()
+            if len(groups) == 7:
+                size, name, cusip, price, action = groups[0], groups[3], groups[4], groups[5], groups[6]
+                entries.append({"Name": name.strip(), "Size": size, "CUSIP": cusip, "Actions": action, "Price": price, "Error": ""})
 
     elif re.match(name_first_pattern, line):
-        for match in re.finditer(name_first_pattern, line):
-            name, cusip, price, action = match.groups()[0], match.groups()[1], match.groups()[2], match.groups()[3]
-            entries.append({"Name": name.strip(), "Size": "", "CUSIP": cusip, "Actions": action, "Price": price, "Error": ""})
+        matches = re.finditer(name_first_pattern, line)
+        for match in matches:
+            groups = match.groups()
+            if len(groups) == 4:
+                name, cusip, price, action = groups[0], groups[1], groups[2], groups[3]
+                entries.append({"Name": name.strip(), "Size": "", "CUSIP": cusip, "Actions": action, "Price": price, "Error": ""})
 
     elif re.match(dual_action_pattern, line):
-        for match in re.finditer(dual_action_pattern, line):
-            size, name, cusip, bid_price, offer_price = match.groups()[0], match.groups()[3], match.groups()[4], match.groups()[5], match.groups()[7]
-            entries.append({"Name": name.strip(), "Size": size, "CUSIP": cusip, "Actions": "bid", "Price": bid_price, "Error": ""})
-            entries.append({"Name": name.strip(), "Size": size, "CUSIP": cusip, "Actions": "offer", "Price": offer_price, "Error": ""})
+        matches = re.finditer(dual_action_pattern, line)
+        for match in matches:
+            groups = match.groups()
+            if len(groups) == 8:
+                size, name, cusip, bid_price, offer_price = groups[0], groups[3], groups[4], groups[5], groups[7]
+                entries.append({"Name": name.strip(), "Size": size, "CUSIP": cusip, "Actions": "bid", "Price": bid_price, "Error": ""})
+                entries.append({"Name": name.strip(), "Size": size, "CUSIP": cusip, "Actions": "offer", "Price": offer_price, "Error": ""})
 
     elif re.match(bid_for_pattern, line):
-        for match in re.finditer(bid_for_pattern, line):
-            price, name, cusip = match.groups()[0], match.groups()[1], match.groups()[2]
-            entries.append({"Name": name.strip(), "Size": "", "CUSIP": cusip, "Actions": "bid", "Price": price, "Error": ""})
+        matches = re.finditer(bid_for_pattern, line)
+        for match in matches:
+            groups = match.groups()
+            if len(groups) == 3:
+                price, name, cusip = groups[0], groups[1], groups[2]
+                entries.append({"Name": name.strip(), "Size": "", "CUSIP": cusip, "Actions": "bid", "Price": price, "Error": ""})
 
     return entries if entries else [default_dict]
-    size, name, cusip, price, action = match.groups()[0], match.groups()[3], match.groups()[4], match.groups()[5]
-
-ValueError: not enough values to unpack (expected 5, got 4)
