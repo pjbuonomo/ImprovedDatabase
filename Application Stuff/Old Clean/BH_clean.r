@@ -20,19 +20,19 @@ BH_long <- function(BH2) {
 
 	# Detect the 9-digits CUSIP
 	message <- strsplit(BH2$Message, split="\\ ")
-	ISIN_CUSIP <- rep("", nrow(BH2))
+	CUSIP <- rep("", nrow(BH2))
 	
 	for (i in 1:length(message)) {
-		ISIN_CUSIP[i] <- message[[i]][1]
-		if (nchar(ISIN_CUSIP[i]) > 9) {
-			ISIN_CUSIP[i] <- substr(ISIN_CUSIP[i], 3, 11) 
+		CUSIP[i] <- message[[i]][1]
+		if (nchar(CUSIP[i]) > 9) {
+			CUSIP[i] <- substr(CUSIP[i], 3, 11) 
 		}
 	}
 
 	# Split by @ to get the price and the rest of message
 	temp <- strsplit(as.character(BH2[['Message']]), split="@")
 
-	columns <- c("ISIN_CUSIP", "Name", "Size", "Action", "Price")
+	columns <- c("CUSIP", "Name", "Size", "Action", "Price")
 	BH2_Clean <- data.frame(matrix(nrow = 0, ncol = length(columns)))
 	colnames(BH2_Clean) <- columns
 	
@@ -44,9 +44,9 @@ BH_long <- function(BH2) {
 	for (i in 1:length(temp)) {
 		rest <- temp[[i]][1]
 		Action <- last_word(substr(rest,1,nchar(rest)-1))
-		Name <- substr(rest, nchar(ISIN_CUSIP[i])+5, nchar(rest)-nchar(Action)-1)
+		Name <- substr(rest, nchar(CUSIP[i])+5, nchar(rest)-nchar(Action)-1)
 		Price <- as.numeric(temp[[i]][2])
-		row <- cbind(ISIN_CUSIP[i], Name, "0", Action, Price)
+		row <- cbind(CUSIP[i], Name, "0", Action, Price)
 		BH2_Clean[i,] <- row
 	}
 
@@ -79,7 +79,7 @@ BH_long2 <- function(BH2) {
 
 	temp <- strsplit(BH2[['Message']], split="@")
 
-	columns <- c("ISIN_CUSIP", "Name", "Size", "Action", "Price")
+	columns <- c("CUSIP", "Name", "Size", "Action", "Price")
 	BH2_Clean <- data.frame(matrix(nrow = 0, ncol = length(columns)))
 	colnames(BH2_Clean) <- columns
 
@@ -152,12 +152,12 @@ BH_short <- function(BH) {
 	rest <- do.call(rbind, strsplit(rest, split=" \\("))[,2]
 
 	# Extract ISIN
-	ISIN_CUSIP <- do.call(rbind, strsplit(rest, split="\\) "))[,1]
+	CUSIP <- do.call(rbind, strsplit(rest, split="\\) "))[,1]
 	rest <- do.call(rbind, strsplit(rest, split="\\) "))[,2]
 
 	# Extract price and action
 	rest <- as.data.frame(rest)
-	columns <- c("ISIN_CUSIP", "Name", "Size", "Action", "Price")
+	columns <- c("CUSIP", "Name", "Size", "Action", "Price")
 	BH_Clean <- data.frame(matrix(nrow = 0, ncol = length(columns)))
 	colnames(BH_Clean) <- columns
 
@@ -167,8 +167,8 @@ BH_short <- function(BH) {
 			rest[i,] <- do.call(rbind, strsplit(rest[i,], split="\\*"))[,1]
 		}
 
-		if (nchar(ISIN_CUSIP[i]) > 9) {
-			ISIN_CUSIP[i] <- substr(ISIN_CUSIP[i], 3, 11) 
+		if (nchar(CUSIP[i]) > 9) {
+			CUSIP[i] <- substr(CUSIP[i], 3, 11) 
 		}
 
 		# Whether the message contains only one quote with @ or bid and offer with /
@@ -178,7 +178,7 @@ BH_short <- function(BH) {
 				Action = "offer"
 			}
 			Price <- as.numeric(unlist(strsplit(rest[i,], split="\\ @ "))[2])
-			row <- cbind(ISIN_CUSIP[i], Name[i], Number[i], Action, Price)
+			row <- cbind(CUSIP[i], Name[i], Number[i], Action, Price)
 			BH_Clean[nrow(BH_Clean)+1,] <- row
 		} else {
 			# If there are bid and offer in one message
@@ -189,7 +189,7 @@ BH_short <- function(BH) {
 				Action = "offer"
 			}
 			Price <- as.numeric(temp[1])
-			row <- cbind(ISIN_CUSIP[i], Name[i], Number[i], Action, Price)
+			row <- cbind(CUSIP[i], Name[i], Number[i], Action, Price)
 			BH_Clean[nrow(BH_Clean)+1,] <- row
 			# Add second row to the data frame
 			Action <- temp[4]
@@ -197,7 +197,7 @@ BH_short <- function(BH) {
 				Action = "offer"
 			}
 			Price <- as.numeric(temp[3])
-			row <- cbind(ISIN_CUSIP[i], Name[i], Number[i], Action, Price)
+			row <- cbind(CUSIP[i], Name[i], Number[i], Action, Price)
 			BH_Clean[nrow(BH_Clean)+1,] <- row
 		}
 	}
